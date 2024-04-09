@@ -1,0 +1,35 @@
+version: '3'
+services:
+  account:
+    image: account:1.0
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+    environment:
+      - DB_PASSWORD=pass
+      - DB_URL=jdbc:mysql://account_mysql_1:3306/my_db
+    networks:
+      - app-network
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: my_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      DB_DDL_AUTO: create
+    ports:
+      - "3306:3306"
+    volumes:
+      - ../mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  oracle-data:

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      containers:
+        - name: account
+          image: parasmani300/account:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_PASSWORD
+              value: pass
+            - name: DB_URL
+              value: jdbc:mysql://192.168.49.2:31454/my_db
+            - name: DB_DDL_AUTO
+              value: create
+            - name: EUREKA_SERVER
+              value: http://service-discovery-service.default.svc.cluster.local:8761/eureka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+spec:
+  selector:
+    app: account
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
